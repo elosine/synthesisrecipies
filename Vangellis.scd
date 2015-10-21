@@ -26,6 +26,8 @@ a = Synth(\chariots);
 a.set(\trig, 0);
 a.set(\trig, 1, \pitch, 60);
 a.set(\trig, 1, \pitch, 67);
+a.set(\trig, 1, \pitch, 43);
+a.set(\trig, 1, \pitch, 36);
 a.free;
 
 350 2200
