@@ -1,39 +1,15 @@
 (
-//Make A Wavetable (from VOsc help file)
-// allocate and fill tables 0 to 7
-8.do({ arg i;
-	var n, a;
-	// allocate table
-	s.sendMsg(\b_alloc, i, 1024);
-	// generate array of harmonic amplitudes
-	n = (i+1)**2;
-	a = Array.fill(n, { arg j; ((n-j)/n).squared.round(0.001) });
-	// fill table
-	s.performList(\sendMsg, \b_gen, i, \sine1, 7, a);
-});
-)
+~wtb1  = Buffer.read(s, "/Users/jyang/GitHub/wavetablesynthesis/wavetables/WT10.aif");
+~wtb2 = Buffer.read(s, "/Users/jyang/GitHub/wavetablesynthesis/wavetables/WT16.aif");
 
-( //Play the waveable oscillator to see which wavetable position you want
-SynthDef("help-VOsc",{ arg out=0, bufoffset=0, freq=240;
-	var x;
-	// mouse x controls the wavetable position
-	x = MouseX.kr(0,7).poll;
-	//Out.ar( out, VOsc3.ar(bufoffset+x, freq+[0,1], freq+[0.37,1.1],freq+[0.43, -0.29], 0.3) )
-	Out.ar( out, VOsc3.ar(bufoffset+x, freq, freq+0.37,freq+0.43, 0.3) )
-}).play(s,[\out, 0, \bufoffset, 0]);
-)
-//I liked wavetable position 4.8 so my oscillator will look like this
-//VOsc3.ar(4.8, freq3, freq3+0.37, freq3+0.43, 0.3333);
-
-(
 SynthDef( \lead, {
-	arg gate=1, atk=0.03, rel=1.5, crv = 0,
+	arg trig=1, atk=0.03, rel=1.5, crv = 0,
 	ffreqhi=15000, ffreqlo=100,
 	fatk=0.01, fdecay= 1.2, fsusl=0.18, frel=1, fcrv= -2,
 	osamp1=0.5, osamp2=0.5, osamp3=1,
 	detune1= -0.08, detune2= 0.08, detune3=0.02,
 	lfo1w=3, lfo1freq=45, lfo2freq = 6, lfo3freq = 0.1,
-	glide=0.7, wtbuf, offset;
+	glide=0.7, wtbuf, offset=0.52;
 	var osc1, freq1, pitch1;
 	var osc2, freq2, pitch2;
 	var osc3, freq3, pitch3;
@@ -68,7 +44,7 @@ SynthDef( \lead, {
 	Out.ar(0, [sig, sig2]*amp*env);
 }).add;
 )
-a = Synth(\lead, [\pitch, 72]);
+a = Synth(\lead, [\pitch, 72, \wtbuf, ~wtb1.bufnum]);
 a.set(\trig, 0);
 a.set(\trig, 1, \pitch, 40);
 a.set(\trig, 1, \pitch, 47);
@@ -79,11 +55,4 @@ a.set(\trig, 1, \pitch, 56);
 a.set(\trig, 0);
 a.set(\trig, 1, \pitch, 55);
 a.set(\trig, 0);
-a.set(\detune1, 0.05, \detune2, -0.05);
-
-//Graph the SynthDef
-f = File.new("/Volumes/JY_Archive 2/SynthDefGraphs/Lead.dot", "w");
-a.dot(f); // put a= before SynthDef
-f.close;
-
 
