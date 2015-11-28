@@ -1,6 +1,6 @@
 (
-~wtb1  = Buffer.read(s, "/Users/jyang/GitHub/wavetablesynthesis/wavetables/WT10.aif");
-~wtb2 = Buffer.read(s, "/Users/jyang/GitHub/wavetablesynthesis/wavetables/WT16.aif");
+~wtb1  = Buffer.read(s, "/Users/jyang/GitHub/wavetablesynthesis/wavetables/WT7.aif");
+~wtb2 = Buffer.read(s, "/Users/jyang/GitHub/wavetablesynthesis/wavetables/WT10.aif");
 
 SynthDef( \lead, {
 	arg trig=1, atk=0.03, rel=1.5, crv = 0,
@@ -9,7 +9,7 @@ SynthDef( \lead, {
 	osamp1=0.5, osamp2=0.5, osamp3=1,
 	detune1= -0.08, detune2= 0.08, detune3=0.02,
 	lfo1w=3, lfo1freq=45, lfo2freq = 6, lfo3freq = 0.1,
-	glide=0.7, wtbuf, offset=0.52;
+	glide=0.7, wtbuf, offset=0.65;
 	var osc1, freq1, pitch1;
 	var osc2, freq2, pitch2;
 	var osc3, freq3, pitch3;
