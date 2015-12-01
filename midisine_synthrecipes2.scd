@@ -141,6 +141,32 @@ s.waitForBoot{
 			Out.ar(0, sig*amp*env);
 		}).add;
 
+		SynthDef(\pad, {
+			arg atk=0.3, rel=0.5, trig=0, crv = -2,
+			lffreq1=2, lffreq2=2, lf1lo=0.14, lf1hi=0.20,
+			lf2lo=0.74, lf2hi=0.8, detune1= -0.06, detune2 = 0.06, detune3 = -12.06,
+			ffreq = 2500;
+			var osc1,osc2, osc3;
+			var freq1, freq2, freq3;
+			var env, sig, amp, pitch, sig2;
+			var lfo1, lfo2;
+			pitch = \pitch.kr(64, 0);
+			amp = \amp.kr(0.75, 0.03);
+			lfo1 = SinOsc.kr(lffreq1).range(lf1lo, lf1hi);
+			lfo2 = SinOsc.kr(lffreq2).range(lf2lo, lf2hi);
+			env = EnvGen.ar(Env.asr(atk, 1, rel, curve: crv),trig);
+			freq1 = (pitch+detune1).midicps;
+			freq2 = (pitch+detune2).midicps;
+			freq3 = (pitch+detune3).midicps;
+			osc1 = Pulse.ar(freq1, lfo1);
+			osc2 = Pulse.ar(freq2, lfo2);
+			osc3 = Pulse.ar(freq3, lfo1);
+			sig = Mix.ar([osc1*0.33333, osc2*0.33333, osc3*0.33333]);
+			sig = DFM1.ar(sig, ffreq, type:0);
+			sig2 = DelayC.ar(sig, 0.2, 0.05);
+			Out.ar(0, [sig, sig2]*env*amp);
+		}).add;
+
 		OSCdef( \trig, {|msg| ~mt.set(\trig, msg[1].asFloat)}, "/trig" );
 		OSCdef( \pitch, {|msg| ~mt.set(\pitch, msg[1].asFloat)}, "/pitch" );
 		OSCdef( \amp, {|msg| ~mt.set(\amp, msg[1].asFloat)}, "/amp" );
@@ -151,6 +177,7 @@ s.waitForBoot{
 		//~mt = Synth(\chariots);
 		//~mt = Synth(\chippy);
 		//~mt = Synth(\synthbass);
+		//~mt = Synth(\pad);
 		//~mt = Synth(\lead, [\wtbuf, ~wt1.bufnum]);
 		~mt = Synth(\snh, [\wtbuf, ~wt3.bufnum]);
 	}
