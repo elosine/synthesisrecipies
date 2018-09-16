@@ -1,9 +1,9 @@
 (
-~wtb1  = Buffer.read(s, "/Users/jyang/GitHub/wavetablesynthesis/wavetables/WT7.aif");
-~wtb2 = Buffer.read(s, "/Users/jyang/GitHub/wavetablesynthesis/wavetables/WT10.aif");
+~wtb1  = Buffer.read(s, "/Users/yangj14/Documents/GitHub/synthesisrecipies/WavetableSynthesis/wavetables/WT7.aif");
+~wtb2 = Buffer.read(s, "/Users/yangj14/Documents/GitHub/synthesisrecipies/WavetableSynthesis/wavetables/WT10.aif");
 
 SynthDef( \lead, {
-	arg trig=1, atk=0.03, rel=1.5, crv = 0,
+	arg gate=1, atk=0.03, rel=0.2, crv = 0,
 	ffreqhi=15000, ffreqlo=100,
 	fatk=0.01, fdecay= 1.2, fsusl=0.18, frel=1, fcrv= -2,
 	osamp1=0.5, osamp2=0.5, osamp3=1,
@@ -18,8 +18,8 @@ SynthDef( \lead, {
 	var env, fenv;
 	var lfo1, lfo2, lfo3;
 	//Envelopes
-	env = EnvGen.ar( Env.asr(atk, 1, rel, crv), trig );
-	fenv = EnvGen.ar( Env.adsr(fatk, fdecay, fsusl, frel, curve:fcrv), trig );
+	env = EnvGen.ar( Env.asr(atk, 1, rel, crv), gate, doneAction:2 );
+	fenv = EnvGen.ar( Env.adsr(fatk, fdecay, fsusl, frel, curve:fcrv), gate );
 	//lfos
 	lfo1 = SinOsc.kr(lfo1freq*fenv);
 	lfo2 = SinOsc.kr(lfo2freq);
@@ -45,14 +45,26 @@ SynthDef( \lead, {
 }).add;
 )
 a = Synth(\lead, [\pitch, 72, \wtbuf, ~wtb1.bufnum]);
-a.set(\trig, 0);
-a.set(\trig, 1, \pitch, 40);
-a.set(\trig, 1, \pitch, 47);
-a.set(\trig, 0);
-a.set(\trig, 1, \pitch, 52);
-a.set(\trig, 0);
-a.set(\trig, 1, \pitch, 56);
-a.set(\trig, 0);
-a.set(\trig, 1, \pitch, 55);
-a.set(\trig, 0);
+a.set(\gate, 0);
+a.set(\gate, 1, \pitch, 40);
+a.set(\gate, 1, \pitch, 47);
+a.set(\gate, 0);
+a.set(\gate, 1, \pitch, 52);
+a.set(\gate, 0);
+a.set(\gate, 1, \pitch, 56);
+a.set(\gate, 0);
+a.set(\gate, 1, \pitch, 55);
+a.set(\gate, 0);
+
+
+(
+Pbind(
+		\instrument, \lead,
+		\pitch, Pseq( [73, 75, 75, 73, 78, 75, \rest, 75, 73, 70, 66, 68, 66, \rest], 8),
+		\dur, Pseq( [0.5, 0.5, 0.5, 0.25, 0.5, 3, 2.5, 0.5, 0.5, 0.5, 0.25, 0.5, 3, 2.5 ], 8 ),
+		\amp, Pseq([0.55],inf),
+		\res, Pseq([0.05], inf)
+	).play(t)
+)
+t = TempoClock(60/60);
 
