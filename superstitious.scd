@@ -116,6 +116,55 @@ SynthDef( \lead, {
 	Out.ar(0, [sig, sig2]*amp*env);
 }).add;
 
+
+SynthDef(\kick,{
+	arg out=0, bodyAttTa=0, bodyDecTa=0.1, bodyAttCa=0, bodyDecCa=2.neg, pitchDeviation=200, pitchOffset=50, decTp=0.06, decCp=6.neg, amp=1, bpm=6, doneAct=2, bodyRatio=0.8, bodyIndex=0.8, klickModRatio=9, klickModIndex=20, klickRatio=0.1, klickAttT=0, klickDecT=0.01, klickAttC=0, klickDecC=6.neg, bodyAmp=1, klickAmp=0.2, noiseAttT=0, noiseDecT=0.01, noiseAttC=0, noiseDecC=2.neg, noiseAmp=0.7, noiseCutoff=8000, noiseRq=0.8, filterFreq=120, res=0.6, inputGain=1, filteredAmp=1, gate=1;
+	var trig, body, klickMod, klick, bodyAmpEnv, pitchEnv, klickAmpEnv, noiseAmpEnv, noise,filtered;
+
+	bodyAmpEnv = EnvGen.ar(Env([0,1,0],[bodyAttTa,bodyDecTa],[bodyAttCa,bodyDecCa]),gate,doneAction:doneAct);
+	pitchEnv = EnvGen.ar(Env([0,1,0],[0,decTp],decCp),gate,pitchDeviation,pitchOffset);
+	klickAmpEnv = EnvGen.ar(Env([0,1,0],[klickAttT,klickDecT],[klickAttC,klickDecC]),gate);
+	noiseAmpEnv = EnvGen.ar(Env([0,1,0],[noiseAttT,noiseDecT],[noiseAttC,noiseDecC]),gate,noiseAmp);
+
+	body = SinOsc.ar(pitchEnv,SinOsc.ar(pitchEnv*bodyRatio,0,bodyIndex*bodyAmpEnv,0.25pi),bodyAmpEnv);
+	klickMod = SinOsc.ar(pitchEnv*klickModRatio,0,klickModIndex,0.25pi);
+	klick = (SinOsc.ar(pitchEnv*klickRatio,klickMod,klickAmpEnv) + SinOsc.ar(pitchEnv*klickRatio*8,klickMod,klickAmpEnv*0.125));
+	noise = BLowPass.ar(WhiteNoise.ar,noiseCutoff,noiseRq,noiseAmpEnv);
+	filtered = DFM1.ar(body + klick,filterFreq,res,inputGain,0,0.0003,filteredAmp);
+
+	Out.ar(out,(body*bodyAmp + (klick*klickAmp) + noise + filtered)*amp!2)
+}).add;
+
+
+SynthDef(\boom,{
+	arg out=0, amp=1, te=0.00125, lo=0.99933, ts=0.1, aT=0.05, sn=1, filtFreq=200, mix=0.0, room=0.5, damp=0.5, vol=3, gate=1;
+	var excitation, tension, loss, snare, toggle;
+	excitation = EnvGen.kr( Env.perc(aT), gate, timeScale: ts, doneAction: 2) * PinkNoise.ar(0.4);
+	tension = te;
+	loss = lo;
+	snare= { arg dec; EnvGen.kr( Env.linen(0.001, 0.2, dec,0.33,-3), gate, timeScale: ts, doneAction: 0) * HPF.ar(WhiteNoise.ar(sn*0.05), 2000) };
+	Out.ar(out,FreeVerb.ar(
+		Mix.new([	(Pan2.ar(HPF.ar(MembraneCircle.ar(excitation, tension, loss), filtFreq), 0.0))*amp,
+			snare.value(1.5)*amp,
+			snare.value(1.5*0.66)*amp
+		]),
+		mix,
+		room,
+		damp)
+	);
+}).add;
+
+SynthDef(\hihat, {
+	arg out = 0, amp = 0.5, att = 0.01, rel = 0.2, ffreq = 6000, pan = 0, gate=1;
+	var env, snd;
+	env = EnvGen.ar( Env.perc(att, rel), gate, doneAction: 2);
+	snd = WhiteNoise.ar;
+	snd = HPF.ar(in: snd, freq: ffreq);
+	Out.ar(out, Pan2.ar(snd, pan) * env * amp);
+}).add;
+)
+
+
 )
 
 
@@ -123,6 +172,40 @@ SynthDef( \lead, {
 t = TempoClock(101/60);
 (
 {
+
+
+	Pbind(
+		\instrument, \boom,
+		\note, Pseq( [1, 1, 1, 1], 1),
+		\dur, Pseq( [1, 0.5, 0.25, 0.25 ], 1 ),
+		\amp, Pseq([17.5], inf)
+	).play(t);
+
+	2.wait;
+	Pbind(
+		\instrument, \hihat,
+		\note, Pseq( [1,   1,    1,   1,      \rest,     1,        \rest,  1,       \rest,    1,     \rest,     1,     1,   1 ], inf),
+		\dur, Pseq( [0.5, 0.5, 0.5, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.5, 0.5, 0.5], inf ),
+		\amp, Pseq([0.25], inf)
+	).play(t);
+
+	Pbind(
+		\instrument, \boom,
+		\note, Pseq([\rest, 1], inf),
+		\dur, Pseq( [1, 1 ], inf ),
+		\amp, Pseq([17.5], inf)
+	).play(t);
+
+
+	Pbind(
+		\instrument, \kick,
+		\note, Pseq([1, \rest,     1,  1, \rest, 1, \rest, 1, \rest, 1, \rest, 1,      1, \rest, 1, \rest1, 1, \rest], inf),
+		\dur, Pseq( [1,  0.75, 0.25, 1, 1,       1, 1,      1, 1,       1,  0.75, 0.25, 1, 1 ,     1, 1,        1, 1], inf ),
+		\amp, Pseq([0.6], inf)
+	).play(t);
+
+	14.25.wait;
+
 	Pbind(
 		\instrument, \synthbass,
 		\pitch, Pseq( [ \rest, 42, 39, 37], 1),
