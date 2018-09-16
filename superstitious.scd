@@ -173,7 +173,6 @@ t = TempoClock(101/60);
 (
 {
 
-
 	Pbind(
 		\instrument, \boom,
 		\note, Pseq( [1, 1, 1, 1], 1),
@@ -184,23 +183,22 @@ t = TempoClock(101/60);
 	2.wait;
 	Pbind(
 		\instrument, \hihat,
-		\note, Pseq( [1,   1,    1,   1,      \rest,     1,        \rest,  1,       \rest,    1,     \rest,     1,     1,   1 ], inf),
-		\dur, Pseq( [0.5, 0.5, 0.5, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.5, 0.5, 0.5], inf ),
+		\note, Pseq( [1,   1,    1,   1,      \rest,     1,        \rest,  1,       \rest,    1,     \rest,     1,     1,   1 ], 32),
+		\dur, Pseq( [0.5, 0.5, 0.5, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.5, 0.5, 0.5], 32 ),
 		\amp, Pseq([0.25], inf)
 	).play(t);
 
 	Pbind(
 		\instrument, \boom,
-		\note, Pseq([\rest, 1], inf),
-		\dur, Pseq( [1, 1 ], inf ),
+		\note, Pseq([\rest, 1], 64),
+		\dur, Pseq( [1, 1 ], 64 ),
 		\amp, Pseq([17.5], inf)
 	).play(t);
 
-
 	Pbind(
 		\instrument, \kick,
-		\note, Pseq([1, \rest,     1,  1, \rest, 1, \rest, 1, \rest, 1, \rest, 1,      1, \rest, 1, \rest1, 1, \rest], inf),
-		\dur, Pseq( [1,  0.75, 0.25, 1, 1,       1, 1,      1, 1,       1,  0.75, 0.25, 1, 1 ,     1, 1,        1, 1], inf ),
+		\note, Pseq([1, \rest,     1,  1, \rest, 1, \rest, 1, \rest, 1, \rest, 1,      1, \rest, 1, \rest1, 1, \rest], 8),
+		\dur, Pseq( [1,  0.75, 0.25, 1, 1,       1, 1,      1, 1,       1,  0.75, 0.25, 1, 1 ,     1, 1,        1, 1], 8 ),
 		\amp, Pseq([0.6], inf)
 	).play(t);
 
