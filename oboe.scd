@@ -10,8 +10,8 @@ SynthDef(\holliger, {
 	env = EnvGen.ar( Env.adsr( 0.2, 0, 1, 0.1), gate, doneAction:2);
 	// Oscillator: pulse, width = 85-90%
 	sig = Pulse.ar( freq, 0.88, 0.1 );
-	//oboes have formants at 1100Hz, the bwfreq argument determines the number of harmonics to include in this case 4
 	//Formants are resonant frequencies that are static and don't necessarily change with pitch
+	//oboes have formants at 1100Hz, & 3000 the bwfreq argument determines the number of harmonics to include in this case 4
 	fsig1 = Formant.ar( freq, 1100, freq*4);
 	 fsig2 = Formant.ar( freq, 3000, freq*4);
 	//play with the mix of these three oscillators
@@ -35,7 +35,7 @@ t = TempoClock.new(96/60);
 (
 Pbind(
 	\instrument, \holliger,
-	\pitch, Pseq( [72, 65, 67, 68, 70, 72, 68, 72, 68, 72, 65, 68, 65, 61, 68, 65], 4),
-	\dur, Pseq( [2, 0.5, 0.5, 0.5, 0.5, 1.5, 0.5, 1.5, 0.5, 1.5, 0.5, 0.5, 0.5, 0.5, 0.5, 4], 4 )
+	\pitch, Pseq( [78, 71, 73, 74, 76, 78, 74, 78, 74, 78, 71, 74, 71, 67, 74, 71], 2),
+	\dur, Pseq( [2, 0.5, 0.5, 0.5, 0.5, 1.5, 0.5, 1.5, 0.5, 1.5, 0.5, 0.5, 0.5, 0.5, 0.5, 4], 2 )
 ).play(t);
 )
