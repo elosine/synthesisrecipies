@@ -138,21 +138,16 @@ s.waitForBoot{ fork{
 
 
 	SynthDef(\boom,{
-		arg out=0, amp=1, te=0.00125, lo=0.99933, ts=0.1, aT=0.05, sn=1, filtFreq=200, mix=0.0, room=0.5, damp=0.5, vol=3, gate=1;
-		var excitation, tension, loss, snare, toggle;
+		arg out=0, amp=1, te=0.00125, lo=0.99933, ts=0.1, aT=0.05, sn=1, filtFreq=200, mix=0, room=1, damp=0.5, vol=3, gate=1, t60=0.3;
+		var excitation, tension, loss, snare, toggle, sig, vsig, drum;
 		excitation = EnvGen.kr( Env.perc(aT), gate, timeScale: ts, doneAction: 2) * PinkNoise.ar(0.4);
 		tension = te;
 		loss = lo;
 		snare= { arg dec; EnvGen.kr( Env.linen(0.001, 0.2, dec,0.33,-3), gate, timeScale: ts, doneAction: 0) * HPF.ar(WhiteNoise.ar(sn*0.05), 2000) };
-		Out.ar(out,FreeVerb.ar(
-			Mix.new([	(Pan2.ar(HPF.ar(MembraneCircle.ar(excitation, tension, loss), filtFreq), 0.0))*amp,
-				snare.value(1.5)*amp,
-				snare.value(1.5*0.66)*amp
-			]),
-			mix,
-			room,
-			damp)
-		);
+		drum =  HPF.ar( MembraneCircle.ar(excitation, tension, loss), filtFreq );
+		sig = Mix.new( [ Pan2.ar ( drum, 0 )  *amp, snare.value(1.5)*amp, snare.value(1.5*0.66)*amp ]) ;
+		vsig = JPverb.ar( sig, t60, damp, room)*mix;
+		Out.ar(out, (sig*(1-mix)) + (vsig*mix) );
 	}).add;
 
 	SynthDef(\hihat, {

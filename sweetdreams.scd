@@ -1,4 +1,6 @@
 s.options.memSize = 81920;
+s.options.numOutputBusChannels = 8;
+s.options.numInputBusChannels = 8;
 (
 SynthDef( \eurythmics, {
 	arg pitch=60, amp=0.9, gate=1;
@@ -25,3 +27,5 @@ Pbind(
 	\dur, Pseq( [0.5], inf),
 ).play(t);
 )
+s.meter
+{Out.ar(2, [SoundIn.ar(0), SoundIn.ar(1)])}.play
