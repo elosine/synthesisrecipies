@@ -72,8 +72,11 @@ s.waitForBoot{ fork{
 		Out.ar(0, sig*env*amp);
 	}).add;
 
-	~wtb1  = Buffer.read(s, "/Users/yangj14/Documents/GitHub/synthesisrecipies/WavetableSynthesis/wavetables/WT7.aif");
-	~wtb2 = Buffer.read(s, "/Users/yangj14/Documents/GitHub/synthesisrecipies/WavetableSynthesis/wavetables/WT10.aif");
+	/*~wtb1  = Buffer.read(s, "/Users/yangj14/Documents/GitHub/synthesisrecipies/WavetableSynthesis/wavetables/WT7.aif");
+	~wtb2 = Buffer.read(s, "/Users/yangj14/Documents/GitHub/synthesisrecipies/WavetableSynthesis/wavetables/WT10.aif");*/
+
+	~wtb1  = Buffer.read(s, "/Users/jwy/Documents/GitHub/synthesisrecipies/WavetableSynthesis/wavetables/WT7.aif");
+	~wtb2 = Buffer.read(s, "/Users/jwy/Documents/GitHub/synthesisrecipies/WavetableSynthesis/wavetables/WT10.aif");
 
 	SynthDef( \lead, {
 		arg gate=1, atk=0.03, rel=0.2, crv = 0,
